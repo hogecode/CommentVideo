@@ -2,6 +2,7 @@ package dto
 
 import "github.com/hogecode/CommentVideo/internal/entity"
 
+// CaptureList
 // CaptureListRequest - キャプチャ一覧取得リクエスト
 type CaptureListRequest struct {
 	VideoID int `form:"video_id" validate:"omitempty,min=1"`
@@ -25,6 +26,8 @@ type CaptureListResponse struct {
 	Pagination Pagination       `json:"pagination"`
 }
 
+
+// CaptureCreate
 // CaptureCreateRequest - キャプチャ作成リクエスト
 type CaptureCreateRequest struct {
 	VideoID int `form:"video_id" validate:"required,min=1"`

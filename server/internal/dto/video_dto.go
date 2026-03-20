@@ -12,6 +12,8 @@ type ApiComment struct {
 	Text   string  `json:"text" validate:"required"`
 }
 
+
+// VideoList
 // VideoListRequest - ビデオ一覧取得リクエスト
 type VideoListRequest struct {
 	IDs     []int  `form:"ids" validate:"dive,min=1"`
@@ -44,6 +46,8 @@ type VideoListResponse struct {
 	Pagination Pagination     `json:"pagination"`
 }
 
+
+// VideoSearch
 // VideoSearchRequest - ビデオ検索リクエスト
 type VideoSearchRequest struct {
 	Q        string `form:"q" validate:"required,min=1"`
@@ -66,6 +70,8 @@ func (v *VideoSearchRequest) SetDefaults() {
 	}
 }
 
+
+// Video
 // VideoResponse - ビデオ詳細レスポンス
 type VideoResponse struct {
 	IsSuccess bool          `json:"is_success"`
@@ -75,6 +81,8 @@ type VideoResponse struct {
 	Comments  []ApiComment  `json:"comments"`
 }
 
+
+// ThumbnailRegenerate
 // ThumbnailRegenerateRequest - サムネイル再生成リクエスト
 type ThumbnailRegenerateRequest struct {
 	Width     *int     `json:"width" validate:"omitempty,min=1"`
