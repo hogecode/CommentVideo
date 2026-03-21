@@ -16,7 +16,8 @@
       "Bash(cp -r d:/Downloads/exe/app/CommePlayer/frontend/src/generated d:/Downloads/exe/app/CommePlayer/apps/web/src/)",
       "Bash(yarn build:*)",
       "Bash(timeout 10 yarn dev)",
-      "Bash(timeout 5 yarn dev)"
+      "Bash(timeout 5 yarn dev)",
+      "Bash(make help:*)"
     ]
   },
   "max_tokens": 2000

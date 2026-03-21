@@ -1,12 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import DPlayerVideo from '@/components/DPlayerVideo'
+import { useParams } from '@tanstack/react-router'
+import DPlayerVideo from '@/components/video/DPlayerVideo'
 import type { VideoResponse } from '@/types/video'
 import { sampleDanmaku } from '@/misc/sampleDanmaku'
-
-export const Route = createFileRoute('/videos/$id')({
-  component: VideoPage,
-})
 
 /** DPlayer の Comment 型 */
 interface Comment {
@@ -25,8 +21,8 @@ interface Comment {
  * URLパラメータから動画IDを取得し、バックエンドAPIを呼び出して
  * ビデオデータ（src + コメント）を取得し、DPlayerVideoに渡す
  */
-function VideoPage() {
-  const { id: videoId } = Route.useParams()
+export default function VideoPage() {
+  const { id: videoId } = useParams({ from: '/videos/$id' })
 
   const [videoData, setVideoData] = useState<VideoResponse | null>(null)
   const [commentList, setCommentList] = useState<Comment[]>(sampleDanmaku)

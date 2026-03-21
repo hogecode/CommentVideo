@@ -46,3 +46,4 @@ export function QueryClientProvider({ children }: { children: ReactNode }) {
  * サーバーサイドやテストで必要な場合に使用
  */
 export { queryClient };
+

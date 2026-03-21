@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  dev:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    environment:
+      - GOPATH=/go
+      - GOPROXY=https://proxy.golang.org,direct
+    volumes:
+      - ..:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /workspace
+    ports:
+      - "3000:3000"    # Vite React Dev Server
+      - "7001:7001"    # Caddy HTTPS
+      - "8000:8000"    # API Server (Go)
+    networks:
+      - commeplayer
+
+  # Optional: PostgreSQL for development
+  # postgres:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_DB=commeplayer_dev
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   networks:
+  #     - commeplayer
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+networks:
+  commeplayer:
+    driver: bridge
+
+# volumes:
+#   postgres_data:

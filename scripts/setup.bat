@@ -46,7 +46,7 @@ echo.
 REM Generate React Query TypeScript client code
 echo Generating React Query TypeScript client code...
 if "!HAS_MAKE!"=="true" (
-    make generate-client
+    make generate-client-win
 ) else (
     docker-compose up openapi-typescript-react-query
 )

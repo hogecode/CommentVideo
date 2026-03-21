@@ -41,7 +41,7 @@ fi
 
 echo -e "${BLUE}Generating React Query TypeScript client code...${NC}"
 if [ "$HAS_MAKE" = true ]; then
-    make generate-client
+    make generate-client-win
 else
     docker-compose up openapi-typescript-react-query
 fi

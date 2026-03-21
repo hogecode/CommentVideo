@@ -1,6 +1,4 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 
 export default function HomePage() {
   return (
@@ -33,5 +31,5 @@ export default function HomePage() {
         <p className="text-sm">&copy; 2026 CommeVideo. All rights reserved.</p>
       </footer>
     </div>
-  );
+  )
 }

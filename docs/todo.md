@@ -1,11 +1,11 @@
 
 ### 全般
 
-- [] .devcontainerを作成
-- [] SPAに移行した後処理
+- [] SPAに移行した後処理(Dockerとcaddy)
+- [] .devcontainerを確認
 - [] Caddyでリバプロ動かせるようにする
-- [] docker-compose.yamlを修正
-- [] Makefileを修正してまとめる
+- [] docker-compose.yamlを確認
+- [] Makefileを確認
 - [] サーバー側でopenapi生成→フロント生成の流れ
 - [] CLAUDE.md修正
 
@@ -13,7 +13,6 @@
 ### クライアント側
 
 **全般**
-- [] SPAへ移行(vite + yarn + tanstackrouter)
 - [] 旧プロジェクトから移行できる部分は移行
 - [] 
 - []

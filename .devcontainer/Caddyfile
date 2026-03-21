@@ -1,0 +1,20 @@
+# Caddyfile - HTTPS リバースプロキシ設定
+# CommePlayer 開発環境用
+
+my.local.konomi.tv {
+	# フロントエンド (Vite React Dev Server)
+	reverse_proxy /api localhost:8000
+
+	# API サーバーへのプロキシ
+	reverse_proxy localhost:3000
+
+	# HTTPS 設定（自己署名証明書）
+	tls internal
+}
+
+# localhost でのアクセスも許可
+localhost:7001 {
+	reverse_proxy /api localhost:8000
+	reverse_proxy localhost:3000
+	tls internal
+}

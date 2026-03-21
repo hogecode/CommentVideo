@@ -1,0 +1,72 @@
+{
+  "name": "CommePlayer Dev",
+  "image": "mcr.microsoft.com/devcontainers/go:latest",
+  "features": {
+    "ghcr.io/devcontainers/features/node:latest": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/git:latest": {},
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:latest": {}
+  },
+  "forwardPorts": [
+    3000,
+    7001,
+    8000
+  ],
+  "portsAttributes": {
+    "3000": {
+      "label": "Vite Dev Server",
+      "onAutoForward": "notify"
+    },
+    "7001": {
+      "label": "CommePlayer (HTTPS)",
+      "onAutoForward": "notify"
+    },
+    "8000": {
+      "label": "API Server",
+      "onAutoForward": "notify"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.Go",
+        "ms-vscode.makefile-tools",
+        "Zignd.html-css-class-completion",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "Vue.volar",
+        "bradlc.vscode-tailwindcss",
+        "GitHub.copilot",
+        "ms-vscode.vscode-typescript-next"
+      ],
+      "settings": {
+        "[go]": {
+          "editor.formatOnSave": true,
+          "editor.defaultFormatter": "golang.go",
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+          }
+        },
+        "[typescript]": {
+          "editor.formatOnSave": true,
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.formatOnSave": true,
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "go.lintOnSave": "package",
+        "go.lintTool": "golangci-lint",
+        "go.lintArgs": [
+          "--config=.golangci.yml"
+        ],
+        "[makefile]": {
+          "editor.insertSpaces": false
+        }
+      }
+    }
+  },
+  "postCreateCommand": "make setup-dev",
+  "remoteUser": "vscode"
+}
