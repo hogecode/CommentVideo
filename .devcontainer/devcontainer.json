@@ -3,11 +3,11 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "dev",
   "workspaceFolder": "/workspace",
-  "forwardPorts": [
-    3000,
-    7001,
-    8000
-  ],
+  "forwardPorts": [3000, 7001, 8000],
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+  },
   "portsAttributes": {
     "3000": {
       "label": "Vite Dev Server",
@@ -30,20 +30,15 @@
         "esbenp.prettier-vscode",
         "dbaeumer.vscode-eslint",
         "bradlc.vscode-tailwindcss",
+        "andrepimenta.claude-code-chat",
         "GitHub.copilot",
         "ms-vscode.vscode-typescript-next",
-        "Vue.volar",
         "ms-azuretools.vscode-docker",
         "Anthropic.claude-vsx",
         "REST-client.rest-client",
         "cweijan.vscode-database-client2",
-        "streetsidesoftware.code-spell-checker",
-        "rangav.vscode-thunder-client",
         "ms-vscode.remote-explorer",
-        "eamodio.gitlens",
-        "GitLab.gitlab-workflow",
-        "ms-vscode-remote.remote-containers",
-        "wix.vscode-import-cost"
+        "ms-vscode-remote.remote-containers"
       ],
       "settings": {
         "[go]": {
@@ -63,9 +58,7 @@
         },
         "go.lintOnSave": "package",
         "go.lintTool": "golangci-lint",
-        "go.lintArgs": [
-          "--config=.golangci.yml"
-        ],
+        "go.lintArgs": ["--config=.golangci.yml"],
         "[makefile]": {
           "editor.insertSpaces": false
         },

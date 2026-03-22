@@ -16,9 +16,9 @@ RUN go mod download
 # ソースをコピー
 COPY . .
 
-# メインパッケージだけビルド
+# メインパッケージだけビルド（SQLite サポートのため CGO_ENABLED=1）
 # cmd/main.go がエントリーポイントの場合
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o generated ./cmd
+RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -v -o generated ./cmd
 
 # =========================
 # ランタイムステージ

@@ -1,85 +1,188 @@
-# AGENTS.md
+# CommePlayer - Claude Code プロジェクト設定
 
-## プロジェクト固有の注意事項
+## プロジェクト構成
 
-- yarn や go はそれぞれ `client/` と `server/` のディレクトリに移動した状態で実行してください。ルートディレクトリにはパッケージ管理系のファイルは一切配置していません。
+```
+CommePlayer/
+├── apps/web/              # Vite + React フロントエンド (SPA)
+├── server/                # Go バックエンド API
+├── caddy/                 # Caddy リバースプロキシ設定
+├── .devcontainer/         # VS Code Dev Container 設定（参考用）
+├── docker-compose.yaml    # 開発環境（ホットリロード）
+├── docker-compose.prod.yaml # 本番環境（本番ビルド）
+└── Makefile              # コマンドライン インターフェース
+```
 
-- クライアントの開発サーバーは `https://localhost:7001` でリッスンされるので (Caddy による HTTPS リバースプロキシが同時に起動されるため)そちらでアクセスしてください。
+## 開発環境のセットアップ
+
+### 推奨: Docker Compose ホットリロード開発
+
+```bash
+make up      # Vite（フロント） + air（バック） + Caddy でホットリロード起動
+make down    # 停止
+make logs    # ログ表示
+```
+
+**アクセス:**
+- Caddy 統合: http://localhost
+- フロントエンド: http://localhost:3000
+- バックエンド: http://localhost:8000
+- Vite HMR: localhost:5173
+
+### ローカル開発（Docker 不使用）
+
+```bash
+# フロントエンド
+cd apps/web && yarn install && yarn dev
+
+# バックエンド（別ターミナル）
+cd server && go mod download && air
+```
+
+### 本番環境デプロイ
+
+```bash
+make up-prod      # 本番環境を起動
+make down-prod    # 停止
+make logs-prod    # ログ表示
+```
 
 ## 技術スタック
 
-CommePlayer は、クライアント・サーバーアーキテクチャに基づく Web アプリケーション です。
+### フロントエンド (`apps/web/`)
+- **React** 19.x
+- **Vite** - 高速ビルドツール
+- **TanStack Router** - ルーティング（ファイルベースではなく手動定義）
+- **TypeScript** - 型安全性
+- **Tailwind CSS** + **shadcn-ui** - UI コンポーネント
+- **TanStack Query** - API データ管理
+- **Zustand** - 状態管理
 
-以下の2つの主要部分で構成されています。
+### バックエンド (`server/`)
+- **Go** 1.22+
+- **Gin** - HTTP ルーター
+- **SQLite** - データベース
+- **Gorm** - SQL コード生成
 
-CommeVideo が一般的な Web サービスと異なる点は、フロントエンドと API サーバーの両方が各ユーザーの PC 環境で動作する点です。
+## 主要コマンド
 
-- `client/`: CommeVideo のフロントエンドアプリケーション
-  - TypeScript
-  - Next.js 3.x
-    - MUI
-    - Zustand
-- `server/`: CommeVideo のバックエンド API サーバー
-  - Go
-  - Chi
-  - sqlc
-    - SQLite 
-    - マイグレーションツール
+全コマンドは `Makefile` に定義されています：
 
-## ディレクトリ構成
+```bash
+make help              # コマンド一覧を表示
 
-### クライアント (`client/`)
+# フロントエンド開発
+make web-dev          # Vite 開発サーバー起動
+make web-build        # ビルド
+make web-typecheck    # 型チェック
+make web-lint         # ESLint
 
-### サーバー (`server/`)
+# バックエンド開発
+make server-run       # 開発サーバー起動
+make server-build     # ビルド
+make server-test      # テスト実行
+make server-fmt       # コードフォーマット
+make server-lint      # golangci-lint
 
+# 本番環境
+make up               # Docker Compose で起動
+make down             # 停止
+make logs             # ログ表示
+```
 
 ## コーディング規約
 
 ### 全般
-- コードをざっくり斜め読みした際の可読性を高めるため、日本語のコメントを多めに記述する
-- コードを変更する際、既存のコメントは、変更によりコメント内容がコードの記述と合わなくなった場合を除き、コメント量に関わらずそのまま保持する
-- ログメッセージに関しては文字化けを避けるため、必ず英語で記述する
-- それ以外のコーディングスタイルは、原則変更箇所周辺のコードスタイルに合わせる
-- 不要な薄いラッパーや別名関数は作らず、責務のあるコンポーネントだけを追加する。
-- コメントは冗長なくらいでちょうどよい。条件分岐・ループ・例外処理の直前にはその意図を書き、Python では `__init__()` で代入するインスタンス変数には「保持する情報」「参照されるメソッド」「前提条件」を必ずコメントとして記す。クラス Docstring には責務のみを記載し、引数説明は `__init__()` の Docstring に集約する
-- Enum・Literal・Union 型の文字列表現は `tweet_capture_watermark_position: 'None' | 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight';` のように基本的に UpperCamelCase で命名する必要がある
-- 通常の Web サービスではないかなり特殊なソフトウェアなので、コンテキストとして分からないことがあれば別途 Readme.md を読むか、私に質問すること
-- DB レコードの Pydantic / TypeScript 定義では、親となるレコード本体のスキーマを最上位に配置し、その下に子スキーマをフィールドの定義順に従って並べる
-- JSON フィールドの値を生成する際は、辞書リテラル (`{}`) を直接書くのではなく、TypedDict のコンストラクタを使用して型構造を明示的に示す
-- 画像の幅・高さ・総数・間隔など、視覚的に重要な情報を持つフィールドは定義の上部に集約し、重要度の高い順に配置することで一目で把握できるようにする
-- 親スキーマから子スキーマへの並び順を徹底し、関連する子スキーマは親となる DB レコードスキーマの直下にまとめて配置する。可読性を損なうような配置変更は行わない
-- TypeScript 側のスキーマ定義も Python 側と同じ順序を維持する。もし差分が発生する場合は、その理由をコメントで明記する
+- **コードはざっくり斜め読みした際の可読性を高めるため、日本語のコメントを多めに記述する**
+- ログメッセージは**英語**で記述（文字化け防止）
+- 既存コメントはコード変更時も保持（内容がコードと合わなくなった場合を除く）
+- 不要な薄いラッパー関数は作らない
+- Enum・Literal・Union 型の文字列表現は UpperCamelCase（例：`'TopLeft' | 'BottomRight'`）
+- DB スキーマ定義：親スキーマを最上位、子スキーマはフィールド定義順に配置
 
-### Python コード
-- **コードの編集後には、必ず `poetry run task lint` コマンドで、Ruff によるコードリンターと Pyright による型チェッカーを実行すること**
-- 文字列にはシングルクォートを用いる (Docstring を除く)
-- Python 3.11 の機能を使う (3.10 以下での動作は考慮不要)
-- ビルトイン型を使用した Type Hint で実装する (from typing import List, Dict などは避ける)
-- Pydantic モデル定義では必ず Annotated 記法を使う。`= Field()` 型の定義は行わずに全て Annotated 記法で定義すること
-- 変数・インスタンス変数は snake_case で命名する
-- 関数・クラス名は UpperCamelCase で命名する (例: `class VideoEncodingTask:`, `def GetClientURL():`)
-  - FastAPI で定義するエンドポイントの関数名も UpperCamelCase で命名する必要がある
-  - FastAPI で定義するエンドポイント名は、文法的に比較的正しくなるようパス名や操作を並び替えた上で、「〇〇API」の形で命名すること
-    - 例: GET `/streams/live/{display_channel_id}/{quality}/mpegts` -> `LiveMPEGTSStreamAPI`
-    - 例: PUT `/users/me` -> `UserUpdateAPI`
-- クラスに生えたメソッド名は lowerCamelCase で命名する (例: `LiveStream.getONAirLiveStreams()`)
-- 複数行のコレクションには末尾カンマを含める
-- `getattr()` で型チェッカーを黙らせるのは禁止。参照する属性は型ヒントやプロパティできちんと公開し、どうしても `getattr()` が必要な場合は「その属性が必ず存在する根拠」を詳細にコメントする
-- すべての Docstring には Args / Returns を明記し、コメントは処理のまとまりごとに必ず加えて「なぜそうするのか」「何を意図した値なのか」を丁寧に説明する。コードを読まなくてもコメントから処理の流れを追えるようにする
-- このプロジェクトでは必ずロギングモジュールとして `import logging` の代わりに `from app import logging` を使うべき
+### TypeScript / React コード
 
-### Vue / TypeScript コード
+- **コード編集後は必ず `yarn lint; yarn typecheck` を実行**
+  - `apps/web/` ディレクトリで実行
+- 文字列はシングルクォート使用
+- 関数・クラス名は UpperCamelCase（例：`function HomePage() {}`）
+- 変数・プロップは lowerCamelCase
+- コンポーネント属性は可能な限り1行（約100文字まで）
+- 複数行コレクションは末尾カンマを含める
+- 型安全性を確保（`any` は避ける）
+- **`new Date()` は絶対に使わない → `date-fns` を使用**
 
-- **コードの編集後には、必ず `yarn lint; yarn typecheck` コマンドで、ESLint によるコードリンターと TypeScript による型チェッカーを実行すること**
-- 文字列にはシングルクォートを用いる
-- 新規で実装する箇所に関しては Vue 3 Composition API パターンに従う
-  - Vue.js 2 から移行した関係で Options API で書かれているコンポーネントがあるが、それらは Options API のまま維持する
-- 新規で実装する Vue 3 Composition API のコンポーネントでは、原則として変数を lowerCamelCase で命名する
-  - FastAPI サーバーでは snake_case で命名している関係で外部 API のフィールドは全てスネークケースになっているが、これはそのまま参照して良い
-- TypeScript による型安全性を確保する
-- コンポーネント属性は可能な限り1行に記述 (約100文字まで)
-- 必ず day.js を utils/index.ts からインポートして使うこと！！！new Date() を絶対に使うな！！！
+### Go コード
 
-### CSS / SCSS スタイリング
-- このプロジェクトで使用している色 (CSS 変数) などは `client/src/App.vue` や `client/src/plugins/vuetify.ts` に定義しているので、それを参照すること
-- 新規に UI を実装する際は、すでに実装されている他のコンポーネントやページの大まかなデザインの方向性を踏襲すること
+- **コード編集後は必ず `make server-fmt` を実行**
+  - goimports による import 整理
+  - golangci-lint によるリント
+- 変数・メソッド名は camelCase
+- 関数・型名は PascalCase
+- 複数行処理にはコメント記載（「なぜ」を説明）
+- エラーハンドリングは明示的に実装
+- Log メッセージは英語で記述
+
+### スタイリング
+
+- CSS 変数は `src/styles/globals.css` に定義
+- shadcn-ui コンポーネントベース（新規 UI はこの方向性に合わせる）
+- Tailwind CSS ユーティリティクラスを活用
+- ダークモード対応（CSS 変数で実装）
+
+## Claude AI 統合
+
+DevContainer で Claude API を使用可能：
+
+```bash
+# API キー設定（.env.local）
+CLAUDE_API_KEY=sk-ant-xxxxxxxxxxxxx
+
+# Claude CLI での質問
+claude "このコードの問題点は？"
+claude --file ./src/main.tsx
+```
+
+## デバッグ・開発時のコマンド
+
+```bash
+# フロントエンド
+make web-preview       # ビルド後のプレビュー
+
+# バックエンド
+make server-clean      # ビルド成果物削除
+make goimports         # import 自動整理
+
+# データベース
+make db-migrate        # マイグレーション実行
+make db-dump           # スキーマ確認
+```
+
+## トラブルシューティング
+
+### DevContainer が起動しない
+```bash
+# VS Code コマンドパレット
+Dev Containers: Rebuild Container
+```
+
+### ポート競合
+```bash
+# Windows: netstat -ano | findstr :3000
+# macOS/Linux: lsof -i :3000
+```
+
+### 型エラー
+```bash
+# フロントエンド
+cd apps/web && yarn typecheck
+
+# バックエンド
+cd server && make server-lint
+```
+
+## 参考資料
+
+- [README.md](./README.md) - プロジェクト全体の説明
+- [.devcontainer/README.md](.devcontainer/README.md) - Dev Container 詳細
+- [Makefile](./Makefile) - 全コマンド定義

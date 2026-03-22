@@ -1,11 +1,11 @@
 
 ### 全般
 
-- [ ] SPAに移行した後処理(Dockerとcaddy)
-- [ ] .devcontainerを確認
-- [ ] Caddyでリバプロ動かせるようにする
-- [ ] docker-compose.yamlを確認
-- [ ] Makefileを確認
+- [ ] apps/webのDockerfile
+- [ ] Devcontainerの拡張機能とAPIキーの設定を見直す
+- [ ] Caddyでのリバプロ動作確認
+- [ ] docker-compose.yamlの動作確認
+- [ ] Makefileの動作確認
 - [ ] サーバー側でopenapi生成→フロント生成の流れ
 - [ ] CLAUDE.md修正
 

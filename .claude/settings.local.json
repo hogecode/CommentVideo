@@ -18,7 +18,9 @@
       "Bash(timeout 10 yarn dev)",
       "Bash(timeout 5 yarn dev)",
       "Bash(make help:*)",
-      "Bash(chmod +x d:/Downloads/exe/app/CommePlayer/.devcontainer/post-create.sh)"
+      "Bash(chmod +x d:/Downloads/exe/app/CommePlayer/.devcontainer/post-create.sh)",
+      "Bash(find d:/Downloads/exe/app/CommePlayer/server/cmd -type f -name *.go)",
+      "Bash(curl -I http://localhost:3000/)"
     ]
   },
   "max_tokens": 2000

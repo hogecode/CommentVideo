@@ -10,7 +10,8 @@ export default defineConfig({
     },
   },
   server: {
+    host: '0.0.0.0', // Docker外からアクセス可能に
     port: 3000,
-    open: true,
+    open: false,
   },
 })

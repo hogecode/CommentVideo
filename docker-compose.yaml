@@ -1,43 +1,48 @@
 version: '3.9'
 
 services:
-  # Go Echo Serverアプリケーション
-  go-server:
+  # フロントエンド - Vite ホットリロード開発サーバー
+  frontend:
+    image: node:20-alpine
+    container_name: commeplayer-frontend
+    ports:
+      - "3000:3000"    # Vite Dev Server
+      - "5173:5173"    # Vite HMR
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+    working_dir: /app
+    networks:
+      - commeplayer-network
+    restart: unless-stopped
+    command: sh -c "yarn install --frozen-lockfile && yarn dev"
+
+  # バックエンド - Go ホットリロード開発サーバー
+  backend:
     build:
       context: ./server
-      dockerfile: Dockerfile
-    container_name: video-app-go-server
+      dockerfile: Dockerfile.dev
+    container_name: commeplayer-backend
     ports:
       - "8000:8000"
     environment:
       - PORT=8000
+      - CGO_ENABLED=1
+    volumes:
+      - ./server:/app
+      - go-modules:/go/pkg/mod
+    working_dir: /app
     networks:
-      - video-app-network
+      - commeplayer-network
     restart: unless-stopped
-
-  # Next.jsフロントエンド
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        - NEXT_PUBLIC_API_BASE_URL=http://localhost
-    container_name: video-app-frontend
-    ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_BASE_URL=http://localhost
-      - NODE_ENV=production
-    depends_on:
-      - go-server
-    networks:
-      - video-app-network
-    restart: unless-stopped
+    command: sh -c "go mod download && go install github.com/air-verse/air@latest && air"
 
   # Caddy リバースプロキシ
   caddy:
     image: caddy:latest
-    container_name: video-app-caddy
+    container_name: commeplayer-caddy
     ports:
       - "80:80"
       - "443:443"
@@ -48,16 +53,17 @@ services:
     environment:
       - ACME_AGREE=true
     depends_on:
-      - go-server
       - frontend
+      - backend
     networks:
-      - video-app-network
+      - commeplayer-network
     restart: unless-stopped
 
-networks:
-  video-app-network:
-    driver: bridge
-
 volumes:
+  go-modules:
   caddy_data:
   caddy_config:
+
+networks:
+  commeplayer-network:
+    driver: bridge

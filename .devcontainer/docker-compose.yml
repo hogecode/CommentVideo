@@ -13,9 +13,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     working_dir: /workspace
     ports:
-      - "3000:3000"    # Vite React Dev Server
-      - "7001:7001"    # Caddy HTTPS
-      - "8000:8000"    # API Server (Go)
+      - "7001:7001"
     networks:
       - commeplayer
     stdin_open: true

@@ -1,14 +1,22 @@
 localhost {
-  
-  # Goサーバーへのリバースプロキシ
-  reverse_proxy /api/* go-server:8000
+  # ヘッダー設定
+  header / {
+    X-Frame-Options "SAMEORIGIN"
+    X-Content-Type-Options "nosniff"
+  }
+
+  # API: Go バックエンドへのリバースプロキシ
+  reverse_proxy /api/* backend:8000
 
   # React フロントエンドへのリバースプロキシ
-  reverse_proxy / frontend:3000
+  reverse_proxy / frontend:3000 {
+    # WebSocket サポート
+    header_up Connection "upgrade"
+    header_up Upgrade "websocket"
+  }
 
-  # ログ出力（任意）
+  # ログ出力
   log {
-    output file /var/log/caddy/access.log
-    format single_field common_log
+    level info
   }
 }

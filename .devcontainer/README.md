@@ -48,33 +48,41 @@ claude --interactive
 
 ## 使用方法
 
-### 1. Dev Container を開く
+### 方式 1: Docker Compose で開発（推奨）
 
-VS Code のコマンドパレット (`Ctrl+Shift+P`) で以下を実行：
-
-```
-Dev Containers: Open Folder in Container
-```
-
-このリポジトリのルートディレクトリを選択。
-
-### 2. 開発サーバーを起動
-
-コンテナ内で以下を実行：
+ホットリロード機能付きの開発環境を起動：
 
 ```bash
-# フロントエンド開発サーバー
-make web-dev
-
-# バックエンド開発サーバー（別ターミナルで）
-make server-run
+make up      # フロントエンド（Vite）+ バックエンド（air）ホットリロード起動
+make down    # 停止
+make logs    # ログ表示
 ```
 
-### 3. アクセス
+**アクセス:**
+- フロントエンド: http://localhost:3000
+- API: http://localhost:8000
+- Vite HMR: localhost:5173
 
-- **フロントエンド**: http://localhost:3000
-- **HTTPS プロキシ**: https://localhost:7001 または https://my.local.konomi.tv:7001
-- **API サーバー**: http://localhost:8000
+### 方式 2: VS Code Dev Container で開発
+
+1. **Dev Container を開く**
+   ```
+   コマンドパレット (Ctrl+Shift+P) → Dev Containers: Open Folder in Container
+   ```
+
+2. **ターミナルで手動起動**
+   ```bash
+   make up      # または個別に実行:
+   make web-dev
+   make server-run
+   ```
+
+### 方式 3: ローカル開発（Docker 不使用）
+
+```bash
+cd apps/web && yarn dev       # フロントエンド
+cd server && air              # バックエンド
+```
 
 ## 含まれるツール
 
@@ -127,37 +135,25 @@ make generate-all     # Swagger + クライアント生成
 
 ### ポート競合エラー
 
-別のプロセスがポートを使用している場合：
-
 ```bash
 # macOS/Linux
-lsof -i :3000   # ポート 3000 を使用しているプロセスを表示
-kill -9 <PID>
+lsof -i :3000
 
 # Windows
 netstat -ano | findstr :3000
-taskkill /PID <PID> /F
 ```
 
-### 依存関係の問題
-
-コンテナを再構築：
+### コンテナ再構築
 
 ```bash
-# VS Code コマンドパレット (Ctrl+Shift+P)
-Dev Containers: Rebuild Container
+make up --build    # フルリビルド
 ```
 
-### ホットリロードが動作しない
-
-Vite または air の設定を確認：
+### ホットリロードが動作しない場合
 
 ```bash
-# apps/web/vite.config.ts
-# server: { port: 3000, watch: { usePolling: true } }
-
-# server/air.toml
-# poll = true
+# コンテナ再起動
+make down && make up
 ```
 
 ## ホストマシンとの連携

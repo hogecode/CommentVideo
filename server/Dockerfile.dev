@@ -1,0 +1,12 @@
+FROM golang:1.26-alpine
+
+# ビルドに必要なパッケージ
+RUN apk add --no-cache git build-base sqlite-dev
+
+WORKDIR /app
+
+# ボリュームマウントされたコードを使用（go mod download と air は CMD で実行）
+EXPOSE 8000
+
+# 開発環境でホットリロード実行（air）
+CMD ["sh", "-c", "go mod download && go install github.com/air-verse/air@latest && air"]

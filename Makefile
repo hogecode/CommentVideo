@@ -1,4 +1,4 @@
-.PHONY: help setup-dev dev web-dev web-build web-lint web-typecheck server-run server-build server-test server-fmt server-lint server-clean db-migrate db-setup-test db-rollback db-new db-dump db-migrate-test sqlc-generate seed goimports goimports-check generate-all swagger-gen-win generate-client-win
+.PHONY: help setup-dev dev web-dev web-build web-lint web-typecheck server-run server-build server-test server-fmt server-lint server-clean db-migrate db-setup-test db-rollback db-new db-dump db-migrate-test sqlc-generate seed goimports goimports-check generate-all swagger-gen-win generate-client-win up down
 
 help: ## ヘルプを表示
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -11,10 +11,49 @@ setup-dev: ## 開発環境をセットアップ（DevContainer用）
 	@echo "📦 開発環境をセットアップしています..."
 	cd apps/web && yarn install
 	cd server && go mod download
-	go install github.com/cosmtrek/air@latest
+	go install github.com/air-verse/air@latest
 	@echo "✅ セットアップが完了しました。'make help' でコマンド一覧を表示します。"
 
+
 ## ========================
+## Docker Compose - 開発環境（ホットリロード）
+## ========================
+
+up: ## ホットリロード開発環境を起動（Vite + air + Caddy）
+	docker compose up
+
+down: ## 開発環境を停止
+	docker compose down
+
+build: ## 開発環境をビルド
+	docker compose build
+
+logs: ## 開発環境のログを表示
+	docker compose logs -f
+
+ps: ## 開発環境のコンテナ状態を表示
+	docker compose ps
+
+## ========================
+## Docker Compose - 本番環境
+## ========================
+
+up-prod: ## 本番環境を起動（ビルド済みバイナリ + 静的配信）
+	docker compose -f docker-compose.prod.yaml up -d
+
+down-prod: ## 本番環境を停止
+	docker compose -f docker-compose.prod.yaml down
+
+build-prod: ## 本番環境をビルド
+	docker compose -f docker-compose.prod.yaml build
+
+logs-prod: ## 本番環境のログを表示
+	docker compose -f docker-compose.prod.yaml logs -f
+
+ps-prod: ## 本番環境のコンテナ状態を表示
+	docker compose -f docker-compose.prod.yaml ps
+
+
 ## フロントエンド (apps/web) コマンド
 ## ========================
 
@@ -39,6 +78,9 @@ web-preview: ## ビルド後のプレビュー
 ## ========================
 
 server-run: ## サーバーを起動
+	cd server && air -c .air.toml
+
+server-run-win: ## サーバーを起動
 	cd server && powershell -NoProfile -Command "Start-Process air -NoNewWindow -Wait"
 
 server-build: ## バイナリをビルド
